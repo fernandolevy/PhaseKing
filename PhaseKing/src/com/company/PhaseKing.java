@@ -8,6 +8,7 @@ import java.net.SocketException;
 
 public class PhaseKing {
     public static void main(String args[]) {
+        //args que passam 0-é o v, 1->endereço da maks, 2->id da tarefa
         String i = args[0];
         String v = args[3];
         int one = 0;
