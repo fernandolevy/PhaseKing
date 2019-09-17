@@ -19,7 +19,6 @@ public class MulticastPeer {
         int round = 0;
         int n = 5;
         int valor_default = 0;
-        int mult = 0;
         int process_id = -1;
         int f = 1; //processo malicioso
         //inicializar socket
@@ -50,7 +49,7 @@ public class MulticastPeer {
                         System.out.println("Received:" + String.valueOf(entrada[0]) + "---" + String.valueOf(entrada[2]));
                     }
                 }
-                System.out.println("PHASE 1 - ROUND 1 CONCLUIDO");
+                System.out.println("PHASE 1 22- ROUND 122 CONCLUIDO");
                 //inicio do round 2 da primeira fase
                 //contagem de 0 e 1
                 int valores_1 = Collections.frequency(valores, "1");
