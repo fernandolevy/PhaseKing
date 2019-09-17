@@ -4,6 +4,8 @@ import java.net.*;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 
 public class MulticastPeer {
     public static void main(String args[]) throws IOException {
@@ -32,6 +34,8 @@ public class MulticastPeer {
                 byte[] data = nova_saida.getBytes();
                 DatagramPacket alfa = new DatagramPacket(data, data.length, group, 6789);
                 s.send(alfa);
+                process_id = Integer.parseInt(saida[2]);
+                //guarda o id do processo que esta executando agora
                 byte[] buffer;
                 buffer = new byte[1000];
                 while (processos.size() < 5) {
@@ -39,7 +43,6 @@ public class MulticastPeer {
                     s.receive(beta);
                     String[] entrada = new String(beta.getData()).split("/");
                     boolean contains = processos.contains(entrada[2]);
-                    process_id = Integer.parseInt(entrada[2]);
                     //verifica se o processo recebido ja esta localizado no array
                     if (!contains) {
                         processos.add(entrada[2]);
@@ -47,8 +50,14 @@ public class MulticastPeer {
                         System.out.println("Received:" + String.valueOf(entrada[0]) + "---" + String.valueOf(entrada[2]));
                     }
                 }
-                System.out.println("PHASE 1");
+                System.out.println("PHASE 1 - ROUND 1 CONCLUIDO");
+                //inicio do round 2 da primeira fase
+                //contagem de 0 e 1
+                int valores_1 = Collections.frequency(valores,"1");
+                int valores_0 = Collections.frequency(valores,"0");
+                if(phase == process_id){
 
+                }
             } catch (SocketException e) {
                 System.out.println("Socket: " + e.getMessage());
             } catch (IOException e) {
