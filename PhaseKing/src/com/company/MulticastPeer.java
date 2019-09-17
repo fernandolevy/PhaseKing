@@ -31,11 +31,7 @@ public class MulticastPeer {
                 DatagramPacket beta = new DatagramPacket(buffer, buffer.length,group,6789);
                 s.receive(beta);
                 String[] entrada = new String(beta.getData()).split("/");
-                //System.out.println("Received:"+String.valueOf(entrada[2]));
-                //System.out.println("Received:"+String.valueOf(entrada[1]));
-                //System.out.println("Received:"+String.valueOf(entrada[0]));
                 boolean contains = processos.contains(entrada[2]);
-                //boolean contains = Arrays.asList(processos).contains(entrada[2]);
                 //verifica se o processo recebido ja esta localizado no array
                 if(!contains){
                     processos.add(entrada[2]);
