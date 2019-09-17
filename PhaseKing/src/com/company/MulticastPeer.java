@@ -29,6 +29,7 @@ public class MulticastPeer {
         //verificar existencia de processos na rede
         for (phase = 1; phase <= f + 1; phase++) {
             try {
+                System.out.println("PHASE"+phase+"  - ROUND 1 INICIADO");
                 String nova_saida = saida[0] + "/" + saida[1] + "/" + saida[2];
                 byte[] data = nova_saida.getBytes();
                 DatagramPacket alfa = new DatagramPacket(data, data.length, group, 6789);
@@ -49,12 +50,13 @@ public class MulticastPeer {
                         System.out.println("Received:" + String.valueOf(entrada[0]) + "---" + String.valueOf(entrada[2]));
                     }
                 }
-                System.out.println("PHASE 1 - ROUND 1 CONCLUIDO");
+                System.out.println("PHASE"+phase+"  - ROUND 1 CONCLUIDO");
                 //inicio do round 2 da primeira fase
                 //contagem de 0 e 1
                 int valores_1 = Collections.frequency(valores, "1");
                 int valores_0 = Collections.frequency(valores, "0");
                 String transmissao = "228.5.6.7";
+                System.out.println("PHASE"+phase+"- ROUND 2 INICIADO");
                 if (phase == process_id) {
                     //define o rei
                     if (valores_0 > valores_1) {
@@ -76,6 +78,7 @@ public class MulticastPeer {
                 } else {
                     s.setTimeToLive(5);
                 }
+                System.out.println("PHASE"+phase+"- ROUND 2 CONCLUIDO");
             } catch (SocketException e) {
                 System.out.println("Socket: " + e.getMessage());
             } catch (IOException e) {
