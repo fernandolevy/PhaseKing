@@ -16,11 +16,14 @@ public class MulticastPeer {
         ArrayList<String> valores = new ArrayList<String>();
         //variaveis de controle (phase e round)
         int phase = 0; //inicio de phase
-        int round = 0;
-        int n = 5;
+        int n = 5;//total de processos
         int valor_default = 0;
         int process_id = -1;
+        int tiebreaker = -1;
         int f = 1; //processo malicioso
+        int turn = 0;
+        int mult = 0;
+        int novo_valor_envio = 0;
         //inicializar socket
         s = new MulticastSocket(6789);
         String[] saida = args[0].split("/");
@@ -29,7 +32,7 @@ public class MulticastPeer {
         //verificar existencia de processos na rede
         for (phase = 1; phase <= f + 1; phase++) {
             try {
-                System.out.println("PHASE"+phase+" - ROUND 1 INICIADO");
+                System.out.println("PHASE" + phase + " - ROUND 1 INICIADO");
                 String nova_saida = saida[0] + "/" + saida[1] + "/" + saida[2];
                 byte[] data = nova_saida.getBytes();
                 DatagramPacket alfa = new DatagramPacket(data, data.length, group, 6789);
@@ -50,7 +53,7 @@ public class MulticastPeer {
                         System.out.println("Received:" + String.valueOf(entrada[0]) + "---" + String.valueOf(entrada[2]));
                     }
                 }
-                System.out.println("PHASE"+phase+" - ROUND 1 CONCLUIDO");
+                System.out.println("PHASE" + phase + " - ROUND 1 CONCLUIDO");
                 //inicio do round 2 da primeira fase
                 //contagem de 0 e 1
                 int valores_1 = Collections.frequency(valores, "1");
@@ -58,7 +61,7 @@ public class MulticastPeer {
                 int valores_0 = Collections.frequency(valores, "0");
                 //System.out.println(valores_0);
                 String transmissao = "228.5.6.7";
-                System.out.println("PHASE"+phase+" - ROUND 2 INICIADO");
+                System.out.println("PHASE" + phase + " - ROUND 2 INICIADO");
                 if (phase == process_id) {
                     //define o rei
                     //ja que nosso default é 0 pode-se utilizar somente duas comparações
@@ -78,13 +81,46 @@ public class MulticastPeer {
                         s.send(gamma);
                     }
                 } else {
-                    while(true){
-
+                    while (turn == 0) {
+                        byte[] buffer3;
+                        buffer3 = new byte[1000];
+                        DatagramPacket delta = new DatagramPacket(buffer3, buffer3.length, group, 6789);
+                        s.receive(delta);
+                        String[] phaseador = new String(delta.getData()).split("/");
+                        tiebreaker = Integer.parseInt(phaseador[0]);
+                        //conferencia de tiebraker se a mensagem for recebida
+                        //se não for é passado o valor padrão
+                        if (tiebreaker == -1) {
+                            tiebreaker = valor_default;
+                        }
+                        if (valores_1 > valores_0) {
+                            mult = valores_1;
+                            if (mult > n / 2 + f) {
+                                novo_valor_envio = 1;
+                            } else {
+                                novo_valor_envio = tiebreaker;
+                            }
+                        }
+                        if (valores_1 < valores_0) {
+                            mult = valores_0;
+                            if (mult > n / 2 + f) {
+                                novo_valor_envio = 0;
+                            } else {
+                                novo_valor_envio = tiebreaker;
+                            }
+                        }
+                        //tratamento no empate
+                        else {
+                            novo_valor_envio = tiebreaker;
+                        }
+                        turn++;
                     }
-                    //espera o envio do pacote do rei
-                    //s.setTimeToLive(5);
+                    turn = 0;//reset do turno para controle do phase king
+                    if (phase == f + 1) {
+                        System.out.println("Valor de decião final:" + novo_valor_envio);
+                    }
                 }
-                System.out.println("PHASE"+phase+"- ROUND 2 CONCLUIDO");
+                System.out.println("PHASE" + phase + "- ROUND 2 CONCLUIDO");
             } catch (SocketException e) {
                 System.out.println("Socket: " + e.getMessage());
             } catch (IOException e) {
