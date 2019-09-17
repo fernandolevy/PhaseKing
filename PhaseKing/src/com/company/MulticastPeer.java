@@ -30,7 +30,7 @@ public class MulticastPeer {
                 DatagramPacket beta = new DatagramPacket(buffer, buffer.length);
                 s.receive(beta);
                 String entrada[] = args[0].split("/");
-                boolean contains = Arrays.asList(processos).contains(entrada[2]);
+                boolean contains = Arrays.asList(processos).contains(entrada[1]);
                 if(!contains){
                     processos[i_ini] = String.valueOf(entrada[1]);
                     valores[i_ini] = String.valueOf(entrada[0]);
