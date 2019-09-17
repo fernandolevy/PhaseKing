@@ -29,7 +29,7 @@ public class MulticastPeer {
         //verificar existencia de processos na rede
         for (phase = 1; phase <= f + 1; phase++) {
             try {
-                System.out.println("PHASE"+phase+"  - ROUND 1 INICIADO");
+                System.out.println("PHASE"+phase+" - ROUND 1 INICIADO");
                 String nova_saida = saida[0] + "/" + saida[1] + "/" + saida[2];
                 byte[] data = nova_saida.getBytes();
                 DatagramPacket alfa = new DatagramPacket(data, data.length, group, 6789);
@@ -50,33 +50,39 @@ public class MulticastPeer {
                         System.out.println("Received:" + String.valueOf(entrada[0]) + "---" + String.valueOf(entrada[2]));
                     }
                 }
-                System.out.println("PHASE"+phase+"  - ROUND 1 CONCLUIDO");
+                System.out.println("PHASE"+phase+" - ROUND 1 CONCLUIDO");
                 //inicio do round 2 da primeira fase
                 //contagem de 0 e 1
                 int valores_1 = Collections.frequency(valores, "1");
+                //System.out.println(valores_1);
                 int valores_0 = Collections.frequency(valores, "0");
+                //System.out.println(valores_0);
                 String transmissao = "228.5.6.7";
-                System.out.println("PHASE"+phase+"- ROUND 2 INICIADO");
+                System.out.println("PHASE"+phase+" - ROUND 2 INICIADO");
                 if (phase == process_id) {
                     //define o rei
-                    if (valores_0 > valores_1) {
+                    //ja que nosso default é 0 pode-se utilizar somente duas comparações
+                    //onde o primeiro encaixa como igual ou maior
+                    if (valores_0 >= valores_1) {
                         String opcao = 0 + "/" + transmissao + "/" + process_id;
                         byte[] opcao2 = opcao.getBytes();
                         DatagramPacket gamma = new DatagramPacket(opcao2, opcao2.length, group, 6789);
                         s.send(gamma);
-                    } else if (valores_0 < valores_1) {
+                    }
+                    //se não for maior nem igual é menor, portanto else
+                    //colocar a recepção e mult aqui!!!!
+                    else {
                         String opcao = 1 + "/" + transmissao + "/" + process_id;
-                        byte[] opcao2 = opcao.getBytes();
-                        DatagramPacket gamma = new DatagramPacket(opcao2, opcao2.length, group, 6789);
-                        s.send(gamma);
-                    } else if (valores_0 == valores_1) {
-                        String opcao = valor_default + "/" + transmissao + "/" + process_id;
                         byte[] opcao2 = opcao.getBytes();
                         DatagramPacket gamma = new DatagramPacket(opcao2, opcao2.length, group, 6789);
                         s.send(gamma);
                     }
                 } else {
-                    s.setTimeToLive(5);
+                    while(true){
+
+                    }
+                    //espera o envio do pacote do rei
+                    //s.setTimeToLive(5);
                 }
                 System.out.println("PHASE"+phase+"- ROUND 2 CONCLUIDO");
             } catch (SocketException e) {
