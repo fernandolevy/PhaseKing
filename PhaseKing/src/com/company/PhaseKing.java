@@ -5,6 +5,7 @@ import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.net.SocketException;
+import java.util.Arrays;
 
 public class PhaseKing {
     public static void main(String args[]) {
@@ -32,7 +33,7 @@ public class PhaseKing {
                     DatagramPacket messageIn = new DatagramPacket(buffer, buffer.length);
                     s.receive(messageIn);
                     System.out.println("Received:" + new String(messageIn.getData()));
-                    if (String.valueOf(messageIn.getData()) == "1") {
+                    if (Arrays.toString(messageIn.getData()).equals("1")) {
                         one = one + 1;
                     }
                     else {
