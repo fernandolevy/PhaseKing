@@ -2,7 +2,6 @@ package com.company;
 
 import java.net.*;
 import java.io.*;
-import java.util.ArrayList;
 import java.util.Arrays;
 
 public class MulticastPeer {
@@ -10,8 +9,8 @@ public class MulticastPeer {
         //inicializa socket como nulo
         MulticastSocket s = null;
         //inicializa o vetor de processos e valores recebidos e controle 1
-        ArrayList<String> processos = new ArrayList<String>();
-        ArrayList<String> valores = new ArrayList<String>();
+        String[] processos = {""};
+        String[] valores = {""};
         //variaveis de controle (phase e round)
         int phase = 0;
         int round = 0;
@@ -22,23 +21,22 @@ public class MulticastPeer {
             String[] saida = args[0].split("/");
             InetAddress group = InetAddress.getByName(saida[1]);
             s.joinGroup(group);
-            String nova_saida = saida[0]+"/"+saida[1]+"/"+saida[2];
+            String nova_saida = saida[0]+"/"+saida[2];
             byte[] data = nova_saida.getBytes();
             DatagramPacket alfa = new DatagramPacket(data, data.length, group, 6789);
             s.send(alfa);
-            byte[] buffer;
-            buffer = new byte[1000];
-            while (processos.size() < 5) {
-                DatagramPacket beta = new DatagramPacket(buffer, buffer.length,group,6789);
+            byte[] buffer = new byte[1000];
+            while (processos.length < 5) {
+                DatagramPacket beta = new DatagramPacket(buffer, buffer.length);
                 s.receive(beta);
-                //quebra o processo em 3 pedaços para processamento
-                String[] entrada = new String(beta.getData()).split("/");
-                boolean contains = processos.contains(entrada[2]);
+                String[] entrada = args[0].split("/");
+                boolean contains = Arrays.asList(processos).contains(entrada[1]);
                 //verifica se o processo recebido ja esta localizado no array
                 if(!contains){
-                    processos.add(entrada[2]);
-                    valores.add(entrada[0]);
-                    System.out.println("Recebido o valor:" + String.valueOf(entrada[0])+" do processo de id:"+String.valueOf(entrada[2]));
+                    processos[i_ini] = String.valueOf(entrada[1]);
+                    valores[i_ini] = String.valueOf(entrada[0]);
+                    i_ini++;
+                    System.out.println("Received:" + new String(beta.getData()));
                 }
             }
         } catch (SocketException e) {
