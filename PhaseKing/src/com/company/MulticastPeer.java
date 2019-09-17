@@ -18,7 +18,7 @@ public class MulticastPeer {
         //verificar existencia de processos na rede
         try {
             s = new MulticastSocket(6789);
-            String saida[] = args[0].split("/");
+            String[] saida = args[0].split("/");
             InetAddress group = InetAddress.getByName(saida[1]);
             s.joinGroup(group);
             String nova_saida = saida[0]+"/"+saida[2];
@@ -29,7 +29,7 @@ public class MulticastPeer {
             while (processos.length < 5) {
                 DatagramPacket beta = new DatagramPacket(buffer, buffer.length);
                 s.receive(beta);
-                String entrada[] = args[0].split("/");
+                String[] entrada = args[0].split("/");
                 boolean contains = Arrays.asList(processos).contains(entrada[1]);
                 //verifica se o processo recebido ja esta localizado no array
                 if(!contains){
