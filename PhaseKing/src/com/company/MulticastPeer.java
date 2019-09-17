@@ -15,13 +15,13 @@ public class MulticastPeer {
         int phase = 0;
         int round = 0;
         int i_ini = 0;
-        //verificar existencia de processos na rede, esperar ack de todos
+        //verificar existencia de processos na rede
         try {
             s = new MulticastSocket(6789);
             String saida[] = args[0].split("/");
             InetAddress group = InetAddress.getByName(saida[1]);
             s.joinGroup(group);
-            String nova_saida = args[0]+"/"+args[2];
+            String nova_saida = saida[0]+"/"+saida[2];
             byte[] data = nova_saida.getBytes();
             DatagramPacket alfa = new DatagramPacket(data, data.length, group, 6789);
             s.send(alfa);
@@ -31,6 +31,7 @@ public class MulticastPeer {
                 s.receive(beta);
                 String entrada[] = args[0].split("/");
                 boolean contains = Arrays.asList(processos).contains(entrada[1]);
+                //verifica se o processo recebido ja esta localizado no array
                 if(!contains){
                     processos[i_ini] = String.valueOf(entrada[1]);
                     valores[i_ini] = String.valueOf(entrada[0]);
