@@ -31,9 +31,7 @@ public class PhaseKing {
 
         for (int phase = 0; phase <= f; phase++) {
 
-            System.out.println(String.valueOf(phase));
             // args give message contents and destination multicast group (e.g. "228.5.6.7")
-            System.out.println("round 1");
             m = v.getBytes();
             messageOut = new DatagramPacket(m, m.length, group, 6789);
             s.send(messageOut);
@@ -60,38 +58,29 @@ public class PhaseKing {
             if (i == phase) {
                 m = String.valueOf(majority).getBytes();
                 messageOut = new DatagramPacket(m, m.length, group, 6789);
+                System.out.println("Received round 2 - Send Majority:" + new String(messageOut.getData()));
                 s.send(messageOut);
-                buffer = new byte[1000];
-                for (int j = 0; j < n; j++) {        // get messages from others in group
-                    messageIn = new DatagramPacket(buffer, buffer.length);
-                    s.receive(messageIn);
-                    System.out.println("Received round 2 - Send Majority" + new String(messageIn.getData()));
-                    flagReceive++;
-                }
                 tiebreaker = v;
 
-            }else{
-
-                for (int j = 0; j < 1; j++) {        // get messages from others in group
-                    messageIn = new DatagramPacket(buffer, buffer.length);
-                    System.out.println("Entrei");
-                    s.receive(messageIn);
-                    System.out.println("Received round 2 - Received Majority:" + new String(messageIn.getData()));
-                    flagReceive++;
-                }
+            } else {
+                messageIn = new DatagramPacket(buffer, buffer.length);
+                s.receive(messageIn);
+                s.setTimeToLive(10);
+                System.out.println("Received round 2 - Received Majority:" + new String(messageIn.getData()));
+                tiebreaker = new String(messageIn.getData());
             }
-            //tiebreaker = "0";
-
             if (mult > n / 2 + f) {
                 v = String.valueOf(majority);
             } else {
                 v = tiebreaker;
             }
             if (phase == f) {
+                m = String.valueOf(v).getBytes();
+                messageOut = new DatagramPacket(m, m.length, group, 6789);
+                System.out.println("Received round 2 - Send Majority:" + new String(messageOut.getData()));
+                s.send(messageOut);
                 System.out.println("output decision value v:" + v);
             }
-
         }
     }
-
 }
