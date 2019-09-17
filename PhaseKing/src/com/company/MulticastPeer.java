@@ -15,7 +15,6 @@ public class MulticastPeer {
         //variaveis de controle (phase e round)
         int phase = 0;
         int round = 0;
-        int i_ini = 0;
         //verificar existencia de processos na rede
         try {
             s = new MulticastSocket(6789);
