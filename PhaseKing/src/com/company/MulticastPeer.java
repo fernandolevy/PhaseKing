@@ -25,10 +25,11 @@ public class MulticastPeer {
         s = new MulticastSocket(6789);
         String[] saida = args[0].split("/");
         InetAddress group = InetAddress.getByName(saida[1]);
+        s.joinGroup(group);
+
         //verificar existencia de processos na rede
         for (phase = 1; phase <= f + 1; phase++) {
             try {
-                s.joinGroup(group);
                 String nova_saida = saida[0] + "/" + saida[1] + "/" + saida[2];
                 byte[] data = nova_saida.getBytes();
                 DatagramPacket alfa = new DatagramPacket(data, data.length, group, 6789);
