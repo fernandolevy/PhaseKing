@@ -30,10 +30,13 @@ public class MulticastPeer {
                 DatagramPacket beta = new DatagramPacket(buffer, buffer.length);
                 s.receive(beta);
                 String entrada[] = args[0].split("/");
-                processos[i_ini] = String.valueOf(entrada[1]);
-                valores[i_ini] = String.valueOf(entrada[0]);
-                i_ini++;
-                System.out.println("Received:" + new String(beta.getData()));
+                boolean contains = Arrays.stream(processos).anyMatch(entrada[2]::equals);
+                if(!contains){
+                    processos[i_ini] = String.valueOf(entrada[1]);
+                    valores[i_ini] = String.valueOf(entrada[0]);
+                    i_ini++;
+                    System.out.println("Received:" + new String(beta.getData()));
+                }
             }
         } catch (SocketException e) {
             System.out.println("Socket: " + e.getMessage());
