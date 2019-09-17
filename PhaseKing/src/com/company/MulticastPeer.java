@@ -126,7 +126,7 @@ public class MulticastPeer {
             } catch (IOException e) {
                 System.out.println("IO: " + e.getMessage());
             } finally {
-                //if (s != null) s.close();
+                if (s != null) s.close();
             }
         }
     }
