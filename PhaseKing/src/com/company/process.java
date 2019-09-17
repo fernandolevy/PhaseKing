@@ -1,6 +1,5 @@
 package com.company;
         import java.io.IOException;
-        import java.util.Random;
         import java.util.Scanner;
 
 public class process extends MulticastPeer{
@@ -11,6 +10,7 @@ public class process extends MulticastPeer{
         String id = scanner.next();
 
         MulticastPeer.main(new String[] {Integer.toString(rand)+"/"+"228.5.6.7"+"/"+id});
-        //acima, a sequencia de envio é v (valor randomico booleano), endereço de multicast, id de processo neste caso 0.
+        //acima, a sequencia de envio é v (valor randomico booleano), endereço de multicast, id de processo deve ser
+        //fornecio pelo termninal.
     }
 }
