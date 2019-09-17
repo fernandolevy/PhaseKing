@@ -65,18 +65,22 @@ public class PhaseKing {
                 for (int j = 0; j < n; j++) {        // get messages from others in group
                     messageIn = new DatagramPacket(buffer, buffer.length);
                     s.receive(messageIn);
-                    System.out.println("Received round 2:" + new String(messageIn.getData()));
+                    System.out.println("Received round 2 - Send Majority" + new String(messageIn.getData()));
                     flagReceive++;
                 }
+                tiebreaker = v;
+
             }else{
-                for (int j = 0; j < n; j++) {        // get messages from others in group
+
+                for (int j = 0; j < 1; j++) {        // get messages from others in group
                     messageIn = new DatagramPacket(buffer, buffer.length);
+                    System.out.println("Entrei");
                     s.receive(messageIn);
-                    System.out.println("Received round 2:" + new String(messageIn.getData()));
+                    System.out.println("Received round 2 - Received Majority:" + new String(messageIn.getData()));
                     flagReceive++;
                 }
             }
-            tiebreaker = "0";
+            //tiebreaker = "0";
 
             if (mult > n / 2 + f) {
                 v = String.valueOf(majority);
