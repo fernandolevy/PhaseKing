@@ -4,7 +4,7 @@ package com.company;
         import java.util.Scanner;
 
 public class process extends MulticastPeer{
-    static int rand = new Random().nextInt(1);
+    static int rand = (int)(Math.random()*2);
     public static void main(String args[]) throws IOException {
         Scanner scanner = new Scanner(System.in);
         System.out.print("Digite seu id:");
