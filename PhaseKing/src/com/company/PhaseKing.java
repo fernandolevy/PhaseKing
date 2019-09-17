@@ -1,65 +1,86 @@
 package com.company;
 
 import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.InetAddress;
-import java.net.MulticastSocket;
-import java.net.SocketException;
+import java.net.*;
+import java.util.Arrays;
 
 public class PhaseKing {
-    public static void main(String args[]) {
-        //args que passam 0-é o v, 1->endereço da maks, 2->id da tarefa
-        String i = args[0];
-        String v = args[3];
+    public static void main(String[] args) throws IOException {
+        int i = Integer.parseInt(args[2]);
+        String v = args[0];
+        String tiebreaker = null;
+
         int one = 0;
-        int majority;
+        int majority = 0;
         int mult = 0;
-        int two = 0;
-        int f = Integer.valueOf(args[1]);
-        for (int phase = 1; phase<= f+1; phase++){
+        int zero = 0;
+        byte[] m;
+        byte[] buffer;
+
+        int n = 5;
+        int f = 1;
+        int flagReceive = 0;
+
+        DatagramPacket messageOut;
+        DatagramPacket messageIn;
+
+        MulticastSocket s = null;
+        InetAddress group = InetAddress.getByName(args[1]);
+        s = new MulticastSocket(6789);
+        s.joinGroup(group);
+
+        for (int phase = 0; phase <= f; phase++) {
+
             // args give message contents and destination multicast group (e.g. "228.5.6.7")
-            MulticastSocket s =null;
-            try {
-                InetAddress group = InetAddress.getByName(args[1]);
-                s = new MulticastSocket(6789);
-                s.joinGroup(group);
-                byte [] m = v.getBytes();
-                DatagramPacket messageOut = new DatagramPacket(m, m.length, group, 6789);
+            m = v.getBytes();
+            messageOut = new DatagramPacket(m, m.length, group, 6789);
+            s.send(messageOut);
+            buffer = new byte[1000];
+            for (int j = 0; j < n; j++) {        // get messages from others in group
+                messageIn = new DatagramPacket(buffer, buffer.length);
+                s.receive(messageIn);
+                System.out.println("Received round 1:" + new String(messageIn.getData()));
+                if (Arrays.toString(messageIn.getData()).equals("1")) {
+                    one = one + 1;
+                } else {
+                    zero = zero + 1;
+                }
+            }
+            if (one > n / 2) {
+                majority = 1;
+                mult = one;
+            } else if (zero > n / 2) {
+                majority = 0;
+                mult = zero;
+            }
+
+            System.out.println("round 2" + " " + String.valueOf(i) + " " + String.valueOf(phase));
+            if (i == phase) {
+                m = String.valueOf(majority).getBytes();
+                messageOut = new DatagramPacket(m, m.length, group, 6789);
+                System.out.println("Received round 2 - Send Majority:" + new String(messageOut.getData()));
                 s.send(messageOut);
-                byte[] buffer = new byte[1000];
-                for(int j=0; j< 5;j++) {		// get messages from others in group
-                    DatagramPacket messageIn = new DatagramPacket(buffer, buffer.length);
-                    s.receive(messageIn);
-                    System.out.println("Received:" + new String(messageIn.getData()));
-                    if (Integer.valueOf(String.valueOf(messageIn.getData())) == 1) {
-                        one = one + 1;
-                    }
-                    else {
-                        two = two + 1;
-                    }
-                }
-                if (one > 5/2) {
-                    majority = 1;
-                    mult = one;
-                }
-                else if (two > 5/2) {
-                    majority = 2;
-                    mult = two;
-                }
-                s.leaveGroup(group);
-            }catch (SocketException e){System.out.println("Socket: " + e.getMessage());
-            }catch (IOException e){System.out.println("IO: " + e.getMessage());
-            }finally {if(s != null) s.close();}
-//                (1g) Execute the following Round 2 actions: // actions in round two of each phase
-//                (1h) if i = phase then // only the phase leader executes this send step
-//                        (1i) broadcast majority to all processes;
-//                (1j) receive tiebreaker from Pphase (default value if nothing is received);
-//                (1k) if mult > n/2 + f then
-//                        (1l) v ←− majority;
-//                (1m) else v ←− tiebreaker;
-//                (1n) if phase = f + 1 then
-//                        (1o) output decision value v.
+                tiebreaker = v;
+
+            } else {
+                messageIn = new DatagramPacket(buffer, buffer.length);
+                s.receive(messageIn);
+                s.setTimeToLive(10);
+                System.out.println("Received round 2 - Received Majority:" + new String(messageIn.getData()));
+                tiebreaker = new String(messageIn.getData());
+            }
+            if (mult > n / 2 + f) {
+                v = String.valueOf(majority);
+            } else {
+                v = tiebreaker;
+            }
+            if (phase == f) {
+                m = String.valueOf(v).getBytes();
+                messageOut = new DatagramPacket(m, m.length, group, 6789);
+                System.out.println("Received round 2 - Send Majority:" + new String(messageOut.getData()));
+                s.send(messageOut);
+                System.out.println("output decision value v:" + v);
+            }
         }
     }
-
 }
