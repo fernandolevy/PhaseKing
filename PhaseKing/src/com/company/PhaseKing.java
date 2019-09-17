@@ -30,6 +30,7 @@ public class PhaseKing {
         s.joinGroup(group);
 
         for (int phase = 0; phase <= f; phase++) {
+
             System.out.println(String.valueOf(phase));
             // args give message contents and destination multicast group (e.g. "228.5.6.7")
             System.out.println("round 1");
@@ -54,6 +55,7 @@ public class PhaseKing {
                 majority = 0;
                 mult = zero;
             }
+
             System.out.println("round 2" + " " + String.valueOf(i) + " " + String.valueOf(phase));
             if (i == phase) {
                 m = String.valueOf(majority).getBytes();
@@ -66,21 +68,24 @@ public class PhaseKing {
                     System.out.println("Received round 2:" + new String(messageIn.getData()));
                     flagReceive++;
                 }
-                if (flagReceive > 0) {
-                    tiebreaker = v;
-                } else {
-                    tiebreaker = "0";
-                }
-                if (mult > n / 2 + f) {
-                    v = String.valueOf(majority);
-                } else {
-                    v = tiebreaker;
-                }
-                if (phase == f) {
-                    System.out.println("output decision value v:" + v);
+            }else{
+                for (int j = 0; j < n; j++) {        // get messages from others in group
+                    messageIn = new DatagramPacket(buffer, buffer.length);
+                    s.receive(messageIn);
+                    System.out.println("Received round 2:" + new String(messageIn.getData()));
+                    flagReceive++;
                 }
             }
+            tiebreaker = "0";
 
+            if (mult > n / 2 + f) {
+                v = String.valueOf(majority);
+            } else {
+                v = tiebreaker;
+            }
+            if (phase == f) {
+                System.out.println("output decision value v:" + v);
+            }
 
         }
     }
