@@ -19,16 +19,16 @@ public class MulticastPeer {
         int round = 0;
         int n = 5;
         int valor_default = 0;
-        int majority = 0;
         int mult = 0;
         int process_id = -1;
         int f = 1; //processo malicioso
+        //inicializar socket
+        s = new MulticastSocket(6789);
+        String[] saida = args[0].split("/");
+        InetAddress group = InetAddress.getByName(saida[1]);
         //verificar existencia de processos na rede
         for (phase = 1; phase <= f + 1; phase++) {
             try {
-                s = new MulticastSocket(6789);
-                String[] saida = args[0].split("/");
-                InetAddress group = InetAddress.getByName(saida[1]);
                 s.joinGroup(group);
                 String nova_saida = saida[0] + "/" + saida[1] + "/" + saida[2];
                 byte[] data = nova_saida.getBytes();
@@ -53,10 +53,28 @@ public class MulticastPeer {
                 System.out.println("PHASE 1 - ROUND 1 CONCLUIDO");
                 //inicio do round 2 da primeira fase
                 //contagem de 0 e 1
-                int valores_1 = Collections.frequency(valores,"1");
-                int valores_0 = Collections.frequency(valores,"0");
-                if(phase == process_id){
-
+                int valores_1 = Collections.frequency(valores, "1");
+                int valores_0 = Collections.frequency(valores, "0");
+                String transmissao = "228.5.6.7";
+                if (phase == process_id) {
+                    //define o rei
+                    byte[] buffer2;
+                    buffer2 = new byte[1000];
+                    if (valores_0 > valores_1) {
+                        String opcao = 0+"/"+"/"+"/";
+                        DatagramPacket gamma = new DatagramPacket(buffer2, buffer.length, group, 6789);
+                        s.send(gamma);
+                    } else if (valores_0 < valores_1) {
+                        String opcao = 1+"/"+"/"+"/";
+                        DatagramPacket gamma = new DatagramPacket(buffer2, buffer.length, group, 6789);
+                        s.send(gamma);
+                    } else if (valores_0 == valores_1) {
+                        String opcao = valor_default+"/"+"/"+"/";
+                        DatagramPacket gamma = new DatagramPacket(buffer2, buffer.length, group, 6789);
+                        s.send(gamma);
+                    }
+                } else {
+                    //wait
                 }
             } catch (SocketException e) {
                 System.out.println("Socket: " + e.getMessage());
