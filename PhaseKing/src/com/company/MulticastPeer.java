@@ -26,7 +26,6 @@ public class MulticastPeer {
         String[] saida = args[0].split("/");
         InetAddress group = InetAddress.getByName(saida[1]);
         s.joinGroup(group);
-
         //verificar existencia de processos na rede
         for (phase = 1; phase <= f + 1; phase++) {
             try {
@@ -50,7 +49,7 @@ public class MulticastPeer {
                         System.out.println("Received:" + String.valueOf(entrada[0]) + "---" + String.valueOf(entrada[2]));
                     }
                 }
-                System.out.println("PHASE 1 22- ROUND 122 CONCLUIDO");
+                System.out.println("PHASE 1 - ROUND 1 CONCLUIDO");
                 //inicio do round 2 da primeira fase
                 //contagem de 0 e 1
                 int valores_1 = Collections.frequency(valores, "1");
@@ -75,14 +74,14 @@ public class MulticastPeer {
                         s.send(gamma);
                     }
                 } else {
-                    //wait
+                    s.setTimeToLive(5);
                 }
             } catch (SocketException e) {
                 System.out.println("Socket: " + e.getMessage());
             } catch (IOException e) {
                 System.out.println("IO: " + e.getMessage());
             } finally {
-                if (s != null) s.close();
+                //if (s != null) s.close();
             }
         }
     }
