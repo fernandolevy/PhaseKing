@@ -19,7 +19,6 @@ public class MulticastPeer {
         int round = 0;
         int n = 5;
         int valor_default = 0;
-        int mult = 0;
         int process_id = -1;
         int f = 1; //processo malicioso
         //inicializar socket
@@ -50,7 +49,7 @@ public class MulticastPeer {
                         System.out.println("Received:" + String.valueOf(entrada[0]) + "---" + String.valueOf(entrada[2]));
                     }
                 }
-                System.out.println("PHASE 1 - ROUND 1 CONCLUIDO");
+                System.out.println("PHASE 1 22- ROUND 122 CONCLUIDO");
                 //inicio do round 2 da primeira fase
                 //contagem de 0 e 1
                 int valores_1 = Collections.frequency(valores, "1");
@@ -58,19 +57,20 @@ public class MulticastPeer {
                 String transmissao = "228.5.6.7";
                 if (phase == process_id) {
                     //define o rei
-                    byte[] buffer2;
-                    buffer2 = new byte[1000];
                     if (valores_0 > valores_1) {
-                        String opcao = 0+"/"+"/"+"/";
-                        DatagramPacket gamma = new DatagramPacket(buffer2, buffer.length, group, 6789);
+                        String opcao = 0 + "/" + transmissao + "/" + process_id;
+                        byte[] opcao2 = opcao.getBytes();
+                        DatagramPacket gamma = new DatagramPacket(opcao2, opcao2.length, group, 6789);
                         s.send(gamma);
                     } else if (valores_0 < valores_1) {
-                        String opcao = 1+"/"+"/"+"/";
-                        DatagramPacket gamma = new DatagramPacket(buffer2, buffer.length, group, 6789);
+                        String opcao = 1 + "/" + transmissao + "/" + process_id;
+                        byte[] opcao2 = opcao.getBytes();
+                        DatagramPacket gamma = new DatagramPacket(opcao2, opcao2.length, group, 6789);
                         s.send(gamma);
                     } else if (valores_0 == valores_1) {
-                        String opcao = valor_default+"/"+"/"+"/";
-                        DatagramPacket gamma = new DatagramPacket(buffer2, buffer.length, group, 6789);
+                        String opcao = valor_default + "/" + transmissao + "/" + process_id;
+                        byte[] opcao2 = opcao.getBytes();
+                        DatagramPacket gamma = new DatagramPacket(opcao2, opcao2.length, group, 6789);
                         s.send(gamma);
                     }
                 } else {
