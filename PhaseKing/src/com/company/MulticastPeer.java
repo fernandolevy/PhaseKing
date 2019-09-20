@@ -23,7 +23,8 @@ public class MulticastPeer {
         int f = 1;     //processo malicioso
         int turn = 0;
         int mult = 0;
-        int novo_valor_envio = 0;
+        int novo_valor_envio = -1;
+        int majority = -1;
         String transmissao = "228.5.6.7";
         //inicializar socket
         s = new MulticastSocket(6789);
@@ -55,55 +56,42 @@ public class MulticastPeer {
                     }
                 }
                 System.out.println("PHASE" + phase + " - ROUND 1 CONCLUIDO");
-                //inicio do round 2 da primeira fase
                 //contagem de 0 e 1
                 int valores_1 = Collections.frequency(valores, "1");
-                //System.out.println(valores_1);
                 int valores_0 = Collections.frequency(valores, "0");
-                //System.out.println(valores_0);
+                if(valores_1 > valores_0){
+                    majority = 1;
+                }
+                else{
+                    majority = 0;
+                }
+                mult = Math.max(valores_1, valores_0);
                 System.out.println("PHASE" + phase + " - ROUND 2 INICIADO");
+                //inicio do round 2
                 if (phase == process_id) {
                     //define o rei
                     //calcula os valores mais recebidos
                     //default_valor é 0, caso o numero de valores seja igual utiliza-se default (0)
-                    if (valores_0 >= valores_1) {
-                        String opcao = 0 + "/" + transmissao + "/" + process_id;
-                        byte[] opcao2 = opcao.getBytes();
-                        DatagramPacket gamma = new DatagramPacket(opcao2, opcao2.length, group, 6789);
-                        s.send(gamma);
-                    }
-                    //se não for maior nem igual, é menor, portanto tem mais 1s do que 0s
-                    else {
-                        String opcao = 1 + "/" + transmissao + "/" + process_id;
-                        byte[] opcao2 = opcao.getBytes();
-                        DatagramPacket gamma = new DatagramPacket(opcao2, opcao2.length, group, 6789);
-                        s.send(gamma);
-                    }
-                    //simula um peer que nao seja rei
+                    String opcao = majority + "/" + transmissao + "/" + process_id;
+                    byte[] opcao2 = opcao.getBytes();
+                    DatagramPacket gamma = new DatagramPacket(opcao2, opcao2.length, group, 6789);
+                    s.send(gamma);
                 } else {
+                    //simula um peer que nao seja rei
                     while (turn == 0) {
                         byte[] buffer3;
                         buffer3 = new byte[1000];
                         DatagramPacket delta = new DatagramPacket(buffer3, buffer3.length, group, 6789);
                         //tempo de espera
                         //s.setSoTimeout(1000);
-                        try {
-                            s.receive(delta);
-                            String[] phaseador = new String(delta.getData()).split("/");
-                            tiebreaker = Integer.parseInt(phaseador[0]);
-                        } catch{
+                        s.receive(delta);
+                        String[] phaseador = new String(delta.getData()).split("/");
+                        tiebreaker = Integer.parseInt(phaseador[0]);
+                        if(tiebreaker == -1){
                             tiebreaker = valor_default;
                         }
-                        //definição de mult fixo
-                        if (valores_1 > valores_0) {
-                            mult = 1;
-                        }
-                        //utiliza padrao caso o mult seja 0 tambem
-                        else {
-                            mult = 0;
-                        }
                         //define v
-                        if ((n / 2 + f)>mult) {
+                        if ((n / 2 + f) > mult) {
                             novo_valor_envio = 1;
                             String nova_saida3 = novo_valor_envio + "/" + transmissao + "/" + process_id;
                             byte[] data3 = nova_saida3.getBytes();
