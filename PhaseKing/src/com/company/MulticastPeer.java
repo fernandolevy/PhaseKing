@@ -24,6 +24,7 @@ public class MulticastPeer {
         int turn = 0;
         int mult = 0;
         int novo_valor_envio = 0;
+        String transmissao = "228.5.6.7";
         //inicializar socket
         s = new MulticastSocket(6789);
         String[] saida = args[0].split("/");
@@ -60,15 +61,13 @@ public class MulticastPeer {
                 //System.out.println(valores_1);
                 int valores_0 = Collections.frequency(valores, "0");
                 //System.out.println(valores_0);
-                String transmissao = "228.5.6.7";
                 System.out.println("PHASE" + phase + " - ROUND 2 INICIADO");
                 if (phase == process_id) {
                     //define o rei
-                    //ja que nosso default é 0 pode-se utilizar somente duas comparações
-                    //onde o primeiro encaixa como igual ou maior
-                    //default é 0!!!
+                    //calcula os valores mais recebidos
+                    //default_valor é 0, caso o numero de valores seja igual utiliza-se default (0)
                     if (valores_0 >= valores_1) {
-                        String opcao = valor_default + "/" + transmissao + "/" + process_id;
+                        String opcao = 0 + "/" + transmissao + "/" + process_id;
                         byte[] opcao2 = opcao.getBytes();
                         DatagramPacket gamma = new DatagramPacket(opcao2, opcao2.length, group, 6789);
                         s.send(gamma);
@@ -80,38 +79,42 @@ public class MulticastPeer {
                         DatagramPacket gamma = new DatagramPacket(opcao2, opcao2.length, group, 6789);
                         s.send(gamma);
                     }
+                    //simula um peer que nao seja rei
                 } else {
                     while (turn == 0) {
                         byte[] buffer3;
                         buffer3 = new byte[1000];
                         DatagramPacket delta = new DatagramPacket(buffer3, buffer3.length, group, 6789);
-                        s.receive(delta);
-                        String[] phaseador = new String(delta.getData()).split("/");
-                        tiebreaker = Integer.parseInt(phaseador[0]);
-                        //conferencia de tiebraker se a mensagem for recebida
-                        //se não for é passado o valor padrão
-                        if (tiebreaker == -1) {
+                        //tempo de espera
+                        //s.setSoTimeout(1000);
+                        try {
+                            s.receive(delta);
+                            String[] phaseador = new String(delta.getData()).split("/");
+                            tiebreaker = Integer.parseInt(phaseador[0]);
+                        } catch{
                             tiebreaker = valor_default;
                         }
+                        //definição de mult fixo
                         if (valores_1 > valores_0) {
-                            mult = valores_1;
-                            if (mult > n / 2 + f) {
-                                novo_valor_envio = 1;
-                            } else {
-                                novo_valor_envio = tiebreaker;
-                            }
+                            mult = 1;
                         }
-                        if (valores_1 < valores_0) {
-                            mult = valores_0;
-                            if (mult > n / 2 + f) {
-                                novo_valor_envio = 0;
-                            } else {
-                                novo_valor_envio = tiebreaker;
-                            }
-                        }
-                        //tratamento no empate
+                        //utiliza padrao caso o mult seja 0 tambem
                         else {
+                            mult = 0;
+                        }
+                        //define v
+                        if ((n / 2 + f)>mult) {
+                            novo_valor_envio = 1;
+                            String nova_saida3 = novo_valor_envio + "/" + transmissao + "/" + process_id;
+                            byte[] data3 = nova_saida3.getBytes();
+                            DatagramPacket eco = new DatagramPacket(data3, data3.length, group, 6789);
+                            s.send(eco);
+                        } else {
                             novo_valor_envio = tiebreaker;
+                            String nova_saida3 = novo_valor_envio + "/" + transmissao + "/" + process_id;
+                            byte[] data3 = nova_saida3.getBytes();
+                            DatagramPacket eco = new DatagramPacket(data3, data3.length, group, 6789);
+                            s.send(eco);
                         }
                         turn++;
                     }
