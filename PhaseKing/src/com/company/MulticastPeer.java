@@ -16,11 +16,11 @@ public class MulticastPeer {
         ArrayList<String> valores = new ArrayList<String>();
         //variaveis de controle (phase e round)
         int phase = 0; //inicio de phase
-        int n = 5;//total de processos
+        int n = 5;     //total de processos
         int valor_default = 0;
         int process_id = -1;
         int tiebreaker = -1;
-        int f = 1; //processo malicioso
+        int f = 1;     //processo malicioso
         int turn = 0;
         int mult = 0;
         int novo_valor_envio = 0;
@@ -66,14 +66,14 @@ public class MulticastPeer {
                     //define o rei
                     //ja que nosso default é 0 pode-se utilizar somente duas comparações
                     //onde o primeiro encaixa como igual ou maior
+                    //default é 0!!!
                     if (valores_0 >= valores_1) {
-                        String opcao = 0 + "/" + transmissao + "/" + process_id;
+                        String opcao = valor_default + "/" + transmissao + "/" + process_id;
                         byte[] opcao2 = opcao.getBytes();
                         DatagramPacket gamma = new DatagramPacket(opcao2, opcao2.length, group, 6789);
                         s.send(gamma);
                     }
-                    //se não for maior nem igual é menor, portanto else
-                    //colocar a recepção e mult aqui!!!!
+                    //se não for maior nem igual, é menor, portanto tem mais 1s do que 0s
                     else {
                         String opcao = 1 + "/" + transmissao + "/" + process_id;
                         byte[] opcao2 = opcao.getBytes();
